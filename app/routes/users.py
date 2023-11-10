@@ -14,6 +14,43 @@ users = Blueprint('users', __name__)
 
 @users.route('/users/signup', methods=['POST'])
 def signup():
+    """
+    Cadastro de usuário.
+    ---
+    tags:
+      - Usuários
+    parameters:
+      - name: username
+        in: formData
+        type: string
+        required: true
+        description: Nome de usuário
+      - name: name
+        in: formData
+        type: string
+        required: true
+        description: Nome completo do usuário
+      - name: email
+        in: formData
+        type: string
+        required: true
+        description: Endereço de e-mail do usuário
+      - name: password
+        in: formData
+        type: string
+        required: true
+        description: Senha do usuário
+      - name: role
+        in: formData
+        type: string
+        required: true
+        description: Papel do usuário
+    responses:
+      201:
+        description: Usuário cadastrado com sucesso
+      400:
+        description: Erro no cadastro do usuário
+    """
     try:
         data = request.get_json()
 
@@ -53,7 +90,7 @@ def signup():
             'email': new_user.email,
             'role': new_user.role
         }
-
+        
         return jsonify(user_data), 201  # 201 significa Created
     except IntegrityError as e:
         # Se ocorrer uma violação de integridade (por exemplo, e-mail duplicado),
@@ -63,6 +100,28 @@ def signup():
 
 @users.route('/users/login', methods=['POST'])
 def login():
+    """
+    Autenticação de usuário.
+    ---
+    tags:
+      - Usuários
+    parameters:
+      - name: email
+        in: formData
+        type: string
+        required: true
+        description: Endereço de e-mail do usuário
+      - name: password
+        in: formData
+        type: string
+        required: true
+        description: Senha do usuário
+    responses:
+      200:
+        description: Autenticação bem-sucedida
+      401:
+        description: Credenciais inválidas
+    """
     # Obtém as credenciais do JSON no corpo da solicitação
     data = request.get_json()
 
@@ -93,7 +152,6 @@ def generate_password(password, salt):
 #checa os hashs na autenticacao
 def check_password(saved_password, salt, provided_password):
     provided_password = generate_password(provided_password, salt)
-    print("{} - {}".format(provided_password, saved_password, salt))
     return saved_password == provided_password
     # Use a função de comparação do Flask-WTF (check_password_hash) se preferir
     # return check_password_hash(saved_password, provided_password)
